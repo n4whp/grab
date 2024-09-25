@@ -1,6 +1,6 @@
 # grab
 
-grab will automate the chown and cp funtions a noted in this class... With only one short command ```grab``` then be prompted to enter the file name
+grab will automate the chown and cp funtions as noted in this class... With only one short command ```grab``` then be prompted to enter the file name. Keep in mind for this script you need to have a folder or device in ```/mnt```
 
 
 to isntall grab all commands must be run as sudo: 
