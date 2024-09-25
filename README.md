@@ -1,6 +1,7 @@
-# grab
+# grab V 1.0.0
 
 grab is a command-line tool that helps you easily manage files and folders in the /mnt directory. If you're working with mounted drives and need to upload, delete, or organize files, this tool makes it much easier with simple commands.
+
 
 
 # Install 
