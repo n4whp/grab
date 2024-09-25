@@ -1,5 +1,7 @@
 # grab
 
+grab will automate the chown and cp funtions a noted in this class... With only one short command ```grab``` then be prompted to enter the file name
+
 
 to isntall grab all commands must be run as sudo: 
 
