@@ -13,16 +13,17 @@ to isntall grab all commands must be run as sudo:
 
 ```sudo ./build.sh```
 
-Now you can run grab!!! May need to run as sudo!! 
+Now you can run grab!!! Need to run as sudo!! 
 
-grab 
 
-output: ```Enter the filename to grab (from /mnt):``` just type in the filename with the extension!!! 
 
-output: 
-
+Available Commands:
 ```
-Copying file: /mnt/test.txt to current directory...
-Changing ownership of the file to: will
-File successfully grabbed and ownership updated.
+    grab -ls: Lists all files and directories in /mnt, displaying detailed file information (permissions, owner, size, etc.).
+    grab -u [filename]: Uploads the specified file to /mnt.
+    grab -rmf [filename]: Removes the specified file from /mnt.
+    grab -rmd [directory]: Removes an empty directory from /mnt.
+    grab -rmfd [directory]: Recursively removes a directory and all of its contents from /mnt.
+    grab -mkdir [directory]: Creates a new directory in /mnt.
+    grab -help: Displays the help guide with all available commands and their usage.
 ```
