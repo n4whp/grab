@@ -2,11 +2,34 @@
 #include <cstdlib>   // for system()
 #include <unistd.h>  // for getuid() and getlogin()
 
-int main() {
-    std::string filename;
-    
-    std::cout << "Enter the filename to grab (from /mnt): ";
-    std::cin >> filename;
+int main(int argc, char* argv[]) {
+    // Check if at least one argument is provided
+    if (argc < 2) {
+        std::cerr << "Usage: grab [filename] [commands (optional)] or grab -ls\n";
+        return 1;
+    }
+
+    // Check if the user wants to list files in /mnt
+    if (std::string(argv[1]) == "-ls") {
+        std::cout << "Listing files in /mnt directory:\n";
+        if (system("ls /mnt") != 0) {
+            std::cerr << "Error: Failed to list files in /mnt.\n";
+            return 1;
+        }
+        return 0;
+    }
+
+    // Get the filename from the first argument
+    std::string filename = argv[1];
+
+    // Get any future commands passed as arguments (for now, just print them)
+    if (argc > 2) {
+        std::cout << "Additional commands provided (not yet implemented): ";
+        for (int i = 2; i < argc; ++i) {
+            std::cout << argv[i] << " ";
+        }
+        std::cout << std::endl;
+    }
 
     // Construct full path for the file in /mnt
     std::string source_path = "/mnt/" + filename;
