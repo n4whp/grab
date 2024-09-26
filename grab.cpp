@@ -80,9 +80,9 @@ void list_directory(const std::string& dir) {
     closedir(dp);
 }
 
-// Function to copy a file to the current mount point
-bool copy_file_to_mnt(const std::string& source_file) {
-    std::string destination_file = current_mount_point + "/" + source_file;
+// Function to copy a file to the current directory where the user is running the program
+bool copy_file_to_current_dir(const std::string& source_file) {
+    std::string destination_file = "./" + source_file;  // Save to current working directory
     std::ifstream source(source_file, std::ios::binary);
     if (!source.is_open()) {
         std::cerr << "Error: Could not open source file: " << source_file << std::endl;
@@ -90,11 +90,11 @@ bool copy_file_to_mnt(const std::string& source_file) {
     }
     std::ofstream destination(destination_file, std::ios::binary);
     if (!destination.is_open()) {
-        std::cerr << "Error: Could not open destination file in " << current_mount_point << "." << std::endl;
+        std::cerr << "Error: Could not open destination file in the current directory." << std::endl;
         return false;
     }
     destination << source.rdbuf();
-    std::cout << "File '" << source_file << "' successfully uploaded to " << current_mount_point << "." << std::endl;
+    std::cout << "File '" << source_file << "' successfully uploaded to the current directory." << std::endl;
     return true;
 }
 
@@ -134,6 +134,20 @@ bool remove_full_directory(const std::string& dir) {
         return false;
     }
 }
+
+bool copy_file_to_current_dir(const std::string& filename) {
+    std::string source = current_mount_point + "/" + filename;
+    std::string destination = "./" + filename; // Copy to current working directory
+
+    // Copy file and change ownership
+    std::string command = "sudo cp " + source + " " + destination + " && sudo chown $(id -u):$(id -g) " + destination;
+    if (system(command.c_str()) == 0) {
+        std::cout << "Successfully copied " << filename << " to the current directory." << std::endl;
+    } else {
+        std::cerr << "Error copying " << filename << std::endl;
+    }
+}
+
 
 // Function to create a directory
 bool create_directory(const std::string& dir) {
@@ -192,24 +206,24 @@ bool set_default_mount_point(const std::string& mount_point) {
 
 // Function to print help
 void print_help() {
+    std::cout << "Grab V 1.0.0" << std::endl;
     std::cout << "Available commands:" << std::endl;
     std::cout << "  grab -ls               : List files in current mount point with detailed information." << std::endl;
-    std::cout << "  grab -u [filename]     : Upload a file to current mount point." << std::endl;
+    std::cout << "  grab -u [filename]     : Upload a file to the current directory." << std::endl;
     std::cout << "  grab -rmf [filename]   : Remove a file from current mount point." << std::endl;
     std::cout << "  grab -rmd [dir]        : Remove an empty directory from current mount point." << std::endl;
-    std::cout << "  grab -rmfd [dir]       : Remove a directory and all its contents from current mount point." << std::endl;
-    std::cout << "  grab -mkdir [dir]      : Create a directory in current mount point." << std::endl;
-    std::cout << "  grab -smp              : Show current mount point." << std::endl;
-    std::cout << "  grab -cmp [mount point]: Change current mount point." << std::endl;
-    std::cout << "  grab -lmp              : List all mount points." << std::endl;
-    std::cout << "  grab -sdmp [mount point]: Set a default mount point in the config file." << std::endl;
-    std::cout << "  grab -help             : Show this help message." << std::endl;
+    std::cout << "  grab -rmd -rf [dir]    : Remove a directory and its contents from current mount point." << std::endl;
+    std::cout << "  grab -md [dir]         : Create a new directory in current mount point." << std::endl;
+    std::cout << "  grab -smp [mount]     : Show the current mount point." << std::endl;
+    std::cout << "  grab -cmp [mount]   : Change the current mount point." << std::endl;
+    std::cout << "  grab -lmp           : List all mount points." << std::endl;
+    std::cout << "  grab -sdmp [mount]: Set a default mount point in config." << std::endl;
+    std::cout << "  grab -h             : Show this help message." << std::endl;
 }
 
-// Main function
 int main(int argc, char* argv[]) {
     if (argc < 2) {
-        std::cerr << "Usage: grab [command]" << std::endl;
+        print_help();
         return 1;
     }
 
@@ -219,44 +233,40 @@ int main(int argc, char* argv[]) {
         list_directory(current_mount_point);
     } else if (command == "-u") {
         if (argc < 3) {
-            std::cerr << "Usage: grab -u [filename]" << std::endl;
+            std::cerr << "Error: No filename provided for upload." << std::endl;
             return 1;
         }
         std::string filename = argv[2];
-        copy_file_to_mnt(filename);
+        copy_file_to_current_dir(filename);
     } else if (command == "-rmf") {
         if (argc < 3) {
-            std::cerr << "Usage: grab -rmf [filename]" << std::endl;
+            std::cerr << "Error: No filename provided for removal." << std::endl;
             return 1;
         }
         std::string filename = argv[2];
         remove_file(filename);
     } else if (command == "-rmd") {
         if (argc < 3) {
-            std::cerr << "Usage: grab -rmd [directory]" << std::endl;
+            std::cerr << "Error: No directory name provided for removal." << std::endl;
             return 1;
         }
-        std::string dir = argv[2];
-        remove_directory(dir);
-    } else if (command == "-rmfd") {
+        std::string dirname = argv[2];
+        remove_directory(dirname);
+    } else if (command == "-rmd" && argc > 3 && std::string(argv[2]) == "-rf") {
+        std::string dirname = argv[3];
+        remove_full_directory(dirname);
+    } else if (command == "-md") {
         if (argc < 3) {
-            std::cerr << "Usage: grab -rmfd [directory]" << std::endl;
+            std::cerr << "Error: No directory name provided to create." << std::endl;
             return 1;
         }
-        std::string dir = argv[2];
-        remove_full_directory(dir);
-    } else if (command == "-mkdir") {
-        if (argc < 3) {
-            std::cerr << "Usage: grab -mkdir [directory]" << std::endl;
-            return 1;
-        }
-        std::string dir = argv[2];
-        create_directory(dir);
+        std::string dirname = argv[2];
+        create_directory(dirname);
     } else if (command == "-smp") {
         show_current_mount_point();
     } else if (command == "-cmp") {
         if (argc < 3) {
-            std::cerr << "Usage: grab -cmp [mount point]" << std::endl;
+            std::cerr << "Error: No new mount point provided." << std::endl;
             return 1;
         }
         std::string new_mount_point = argv[2];
@@ -265,15 +275,24 @@ int main(int argc, char* argv[]) {
         list_all_mount_points();
     } else if (command == "-sdmp") {
         if (argc < 3) {
-            std::cerr << "Usage: grab -sdmp [mount point]" << std::endl;
+            std::cerr << "Error: No mount point provided to set as default." << std::endl;
             return 1;
         }
         std::string mount_point = argv[2];
         set_default_mount_point(mount_point);
-    } else if (command == "-help") {
+
+    } else if (command == "-g") {
+        if (argc < 3) {
+            std::cerr << "Error: No filename provided for grabbing." << std::endl;
+            return 1;
+        }
+        std::string filename = argv[2];
+        copy_file_to_current_dir(filename); 
+    } else if (command == "-h") {
         print_help();
     } else {
-        std::cerr << "Unknown command: " << command << std::endl;
+        std::cerr << "Error: Unknown command." << std::endl;
+        print_help();
         return 1;
     }
 
