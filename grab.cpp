@@ -209,6 +209,7 @@ void print_help() {
     std::cout << "Grab V 1.0.0" << std::endl;
     std::cout << "Available commands:" << std::endl;
     std::cout << "  grab -ls               : List files in current mount point with detailed information." << std::endl;
+    std::cout << "  grab -g [filename]     : Copies file from mount point and moves it to working DIR" << std::endl;
     std::cout << "  grab -u [filename]     : Upload a file to the current directory." << std::endl;
     std::cout << "  grab -rmf [filename]   : Remove a file from current mount point." << std::endl;
     std::cout << "  grab -rmd [dir]        : Remove an empty directory from current mount point." << std::endl;
