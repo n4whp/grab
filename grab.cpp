@@ -135,18 +135,6 @@ bool remove_full_directory(const std::string& dir) {
     }
 }
 
-bool copy_file_to_current_dir(const std::string& filename) {
-    std::string source = current_mount_point + "/" + filename;
-    std::string destination = "./" + filename; // Copy to current working directory
-
-    // Copy file and change ownership
-    std::string command = "sudo cp " + source + " " + destination + " && sudo chown $(id -u):$(id -g) " + destination;
-    if (system(command.c_str()) == 0) {
-        std::cout << "Successfully copied " << filename << " to the current directory." << std::endl;
-    } else {
-        std::cerr << "Error copying " << filename << std::endl;
-    }
-}
 
 
 // Function to create a directory
