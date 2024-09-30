@@ -88,3 +88,7 @@ If you’re not sure what to do, you can always run:
     grab -help
 
 This will list all the available commands and explain how to use them.
+
+
+# Known Bug: 
+For some reason the commands to set a default mnt point or change in the current command prombt isnt working.. 
