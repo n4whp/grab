@@ -5,7 +5,7 @@ current_mount_point="/mnt"
 
 # Function to display help
 print_help() {
-    echo "Grab V 1.0.0"
+    echo "Grab V 1.0.0  (Shell)"
     echo "Available commands:"
     echo "  grab -ls               : List files in current mount point with detailed information."
     echo "  grab -g [filename]     : Copies file from mount point to the current working directory."
